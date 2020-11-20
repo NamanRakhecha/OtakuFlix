@@ -1,6 +1,7 @@
 package com.example.jsouptest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<AnimeModel> mDataset;
     Context context;
+    public static final String VideoLink= "";
 
     public Adapter(ArrayList<AnimeModel> mDataset, Context context) {
         this.mDataset = mDataset;
@@ -35,9 +37,18 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             imageView= itemView.findViewById(R.id.imageView);
             textView= itemView.findViewById(R.id.animetitle);
         }
-        void bind(int position){
-            textView.setText(mDataset.get(position).getTitle());
+        void bind(final int position){
+            textView.setText(mDataset.get(position).getVidLink());
             Picasso.get().load(mDataset.get(position).getImg_url()).into(imageView);
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, Player.class);
+                    intent.putExtra(VideoLink,mDataset.get(position).getVidLink());
+                    view.getContext().startActivity(intent);
+                }
+            });
         }
     }
     @NonNull

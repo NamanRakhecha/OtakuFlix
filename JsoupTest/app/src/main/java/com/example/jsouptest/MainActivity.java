@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,6 +21,10 @@ public class MainActivity extends AppCompatActivity {
     Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
     ArrayList<AnimeModel> mList = new ArrayList<>();
+    ArrayList vidLinkList= new ArrayList();
+    ArrayList vidUrl= new ArrayList();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public class List extends AsyncTask<Void, Void, Void> {
-
         @Override
         protected Void doInBackground(Void... voids) {
             try {
@@ -49,13 +53,40 @@ public class MainActivity extends AppCompatActivity {
                 Elements img = document.select("div.img");
                 Elements title = document.select("p.name");
 
+               /** for(int i=0; i<title.size(); i++){
+                    String extract_link = title.select("a").eq(i).attr("abs:href");
+                    //String video_Streaming_Page= "https://gogoanime.so"+extract_link;
+                    Document videoLinkDoc= Jsoup.connect(extract_link).get();
+                    String check = videoLinkDoc.toString();
+                    Elements linkTag = videoLinkDoc.getElementsByClass("jw-media jw-reset");
+                    String link= linkTag.select("video").attr("abs:src");
+                    vidLinkList.add(extract_link);
+
+                }**/
+
+               for(int i =0; i<title.size(); i++){
+                   String extract_link = title.select("a").eq(i).attr("abs:href");
+                   vidLinkList.add(extract_link);
+
+               }
+               for (int i= 0 ; i<vidLinkList.size();i++){
+                   Document videoLinkDoc= Jsoup.connect(vidLinkList.get(i).toString()).get();
+                   Elements linkTag = videoLinkDoc.getElementsByTag("video");
+                       String link= linkTag.select("video").eq(i).attr("abs:src");
+                       vidUrl.add(link);
+
+               }
+
+
                 int size = img.size();
                 for(int i=0; i<size; i++) {
                     String imgUrl = img.select("div.img").select("img").eq(i).attr("src");
 
                     String animetitle = title.select("a").eq(i).attr("title").toString();
-                    mList.add(new AnimeModel(imgUrl,animetitle));
+                    String vidLink = vidUrl.get(i).toString();
+                    mList.add(new AnimeModel(imgUrl,animetitle,vidLink));
                 }
+
 
             } catch (IOException e) {
                 e.printStackTrace();
