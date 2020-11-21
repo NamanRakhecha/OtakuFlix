@@ -29,19 +29,23 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private class AnimeViewholder extends RecyclerView.ViewHolder{
         ShapeableImageView imageView;
-        MaterialTextView textView;
+        MaterialButton streambut;
+        MaterialTextView episode_textView;
+
 
 
         public AnimeViewholder(@NonNull View itemView) {
             super(itemView);
             imageView= itemView.findViewById(R.id.imageView);
-            textView= itemView.findViewById(R.id.animetitle);
+            streambut= itemView.findViewById(R.id.stream);
+            episode_textView= itemView.findViewById(R.id.episode_no);
         }
         void bind(final int position){
-            textView.setText(mDataset.get(position).getVidLink());
-            Picasso.get().load(mDataset.get(position).getImg_url()).into(imageView);
+            //textView.setText(mDataset.get(position).getEpisode());
+            episode_textView.setText((mDataset.get(position).getTitle()+ "\n\n"+ mDataset.get(position).getEpisode()));
+            Picasso.get().load(mDataset.get(position).getImg_url()).resize(800,1280).into(imageView);
 
-            imageView.setOnClickListener(new View.OnClickListener() {
+            streambut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(context, Player.class);

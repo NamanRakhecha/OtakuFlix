@@ -4,13 +4,15 @@ public class AnimeModel {
     String img_url;
     String title;
     String vidLink;
+    String episode;
 
 
 
-    public AnimeModel(String img_url, String title, String vidLink) {
+    public AnimeModel(String img_url, String title, String vidLink, String episode) {
         this.img_url = img_url;
         this.title = title;
         this.vidLink= vidLink;
+        this.episode= episode;
     }
 
     public String getImg_url() {
@@ -34,5 +36,13 @@ public class AnimeModel {
 
     public String getVidLink() {
         return vidLink;
+    }
+
+    public String getEpisode() {
+        return episode;
+    }
+
+    public void setEpisode(String episode) {
+        this.episode = episode;
     }
 }

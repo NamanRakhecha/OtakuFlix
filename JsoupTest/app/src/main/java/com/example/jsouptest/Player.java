@@ -1,5 +1,6 @@
 package com.example.jsouptest;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -44,20 +45,19 @@ public class Player extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.hide();
         Intent intent = getIntent();
         String vidUrl= intent.getStringExtra(Adapter.VideoLink);
         playerView = (PlayerView) findViewById(R.id.player);
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
         fullscreen = (ImageView) findViewById(R.id.fullscreen);
-        Toast.makeText(getApplicationContext(),vidUrl,Toast.LENGTH_LONG).show();
-
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN
                 ,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        Uri videoURl = Uri.parse("https://gogo-stream.com/goto.php?url=aHR0cHM6LyAawehyfcghysfdsDGDYdgdsfsdfwstdgdsgtert9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL3N3aWZ0LXNob3JlLTI5MjAxNS9ZWDE1N0g0WFA5U0svMjJhXzE2MDU4Nzg2MzExNDc4ODYubXA0");
-
+        Uri videoURl = Uri.parse(vidUrl);
         LoadControl loadControl= new DefaultLoadControl();
         BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
 
@@ -157,6 +157,8 @@ public class Player extends AppCompatActivity {
 
             }
         });
+
+
     }
 
     @Override
