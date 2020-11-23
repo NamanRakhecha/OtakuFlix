@@ -43,7 +43,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void bind(final int position){
             //textView.setText(mDataset.get(position).getEpisode());
             episode_textView.setText((mDataset.get(position).getTitle()+ "\n\n"+ mDataset.get(position).getEpisode()));
-            Picasso.get().load(mDataset.get(position).getImg_url()).resize(800,1280).into(imageView);
+            Picasso.get().load(mDataset.get(position).getImg_url()).resize(720,1080).into(imageView);
 
             streambut.setOnClickListener(new View.OnClickListener() {
                 @Override
