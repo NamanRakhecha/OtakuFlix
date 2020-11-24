@@ -3,6 +3,7 @@ package com.example.jsouptest;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
@@ -34,6 +36,9 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+
+import java.net.URL;
 
 public class Player extends AppCompatActivity {
     SimpleExoPlayer simpleExoPlayer;
@@ -41,6 +46,11 @@ public class Player extends AppCompatActivity {
     ProgressBar progressBar;
     ImageView fullscreen;
     boolean flag = false;
+    Uri videoURl;
+    private boolean playWhenReady = true;
+    private int currentWindow = 0;
+    private long playbackPosition = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,132 +59,81 @@ public class Player extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.hide();
         Intent intent = getIntent();
-        String vidUrl= intent.getStringExtra(Adapter.VideoLink);
+        String vidUrl = intent.getStringExtra(Adapter.VideoLink);
         playerView = (PlayerView) findViewById(R.id.player);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
-        fullscreen = (ImageView) findViewById(R.id.fullscreen);
+        videoURl = Uri.parse(vidUrl);
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN
-                ,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        Uri videoURl = Uri.parse(vidUrl);
-        LoadControl loadControl= new DefaultLoadControl();
-        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
 
-        TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+    }
 
-        simpleExoPlayer = ExoPlayerFactory
-                .newSimpleInstance(Player.this,trackSelector,loadControl);
-
-        DefaultHttpDataSourceFactory factory = new DefaultHttpDataSourceFactory(
-                "exoplayer_video"
-        );
-
-        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-
-        MediaSource mediaSource = new ExtractorMediaSource(videoURl
-        ,factory,extractorsFactory,null,null);
-
+    private void initializePlayer() {
+        simpleExoPlayer = new SimpleExoPlayer.Builder(this).build();
         playerView.setPlayer(simpleExoPlayer);
-        playerView.setKeepScreenOn(true);
-        simpleExoPlayer.prepare(mediaSource);
-        simpleExoPlayer.setPlayWhenReady(true);
-        simpleExoPlayer.addListener(new com.google.android.exoplayer2.Player.EventListener() {
-            @Override
-            public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+        MediaItem mediaItem = MediaItem.fromUri(videoURl);
+        simpleExoPlayer.setMediaItem(mediaItem);
+        simpleExoPlayer.setPlayWhenReady(playWhenReady);
+        simpleExoPlayer.seekTo(currentWindow, playbackPosition);
+        simpleExoPlayer.prepare();
+    }
+    private void releasePlayer() {
+        if (simpleExoPlayer != null) {
+            playWhenReady = simpleExoPlayer.getPlayWhenReady();
+            playbackPosition = simpleExoPlayer.getCurrentPosition();
+            currentWindow = simpleExoPlayer.getCurrentWindowIndex();
+            simpleExoPlayer.release();
+            simpleExoPlayer = null;
+        }
+    }
+    @SuppressLint("InlinedApi")
+    private void hideSystemUi() {
+        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
 
-            }
-
-            @Override
-            public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-
-            }
-
-            @Override
-            public void onLoadingChanged(boolean isLoading) {
-
-            }
-
-            @Override
-            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                if(playbackState == com.google.android.exoplayer2.Player.STATE_BUFFERING){
-                    progressBar.setVisibility(View.VISIBLE);
-
-                }else if (playbackState == com.google.android.exoplayer2.Player.STATE_READY){
-                    progressBar.setVisibility(View.GONE);
-                }
-
-            }
-
-            @Override
-            public void onRepeatModeChanged(int repeatMode) {
-
-            }
-
-            @Override
-            public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
-
-            }
-
-            @Override
-            public void onPlayerError(ExoPlaybackException error) {
-
-            }
-
-            @Override
-            public void onPositionDiscontinuity(int reason) {
-
-            }
-
-            @Override
-            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
-            }
-
-            @Override
-            public void onSeekProcessed() {
-
-            }
-        });
-
-        fullscreen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(flag){
-                    //Flag is true
-                    //Enter FullScreen
-                    fullscreen.setImageDrawable(getResources().getDrawable(R.drawable.exo_controls_fullscreen_enter));
-
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    flag = false;
-
-                }else{
-                    //When Flag False
-                    fullscreen.setImageDrawable(getResources().getDrawable(R.drawable.exo_controls_fullscreen_exit));
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    flag= true;
-                }
-
-            }
-        });
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(Util.SDK_INT>=24){
+            initializePlayer();
+        }
 
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(Util.SDK_INT>=24){
+
+            releasePlayer();
+        }
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideSystemUi();
+        if((Util.SDK_INT<24 || simpleExoPlayer == null)){
+            initializePlayer();
+
+    }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        simpleExoPlayer.setPlayWhenReady(false);
-        simpleExoPlayer.getPlaybackState();
+        if(Util.SDK_INT<24){
+            releasePlayer();
+        }
 
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
 
-        simpleExoPlayer.setPlayWhenReady(true);
-        simpleExoPlayer.getPlaybackState();
-
-    }
 }

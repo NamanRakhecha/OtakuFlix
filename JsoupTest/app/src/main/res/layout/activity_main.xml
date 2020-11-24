@@ -6,9 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-<androidx.recyclerview.widget.RecyclerView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/Main_Recycler"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/Main_Recycler"
+        android:layout_width="411dp"
+        android:layout_height="661dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="413dp"
+        android:layout_height="75dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Main_Recycler"
+        app:menu="@menu/bottom_nav_items"
+        app:labelVisibilityMode="labeled"
+
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
