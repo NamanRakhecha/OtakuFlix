@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                    try {
                        Document page = Jsoup.connect(vidUrl.get(i).toString()).ignoreContentType(true).get();
                        JSONObject jsonObject = new JSONObject(page.text());
-                       String qualityUrl = ((JSONObject)jsonObject.getJSONArray("source_bk").get(0)).getString("file");
+                       String qualityUrl = ((JSONObject)jsonObject.getJSONArray("source").get(0)).getString("file");
 
                        getLink.add(qualityUrl);
 
